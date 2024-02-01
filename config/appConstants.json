@@ -12,5 +12,6 @@
     },
     "PRISMA_ERROR_CODES": {
         "DUPLICATE_ENTRY": "P2002"
-    }
+    },
+    "TEST_JWT_SECRET": "VZEB64KASOf20splwZKPrqPay4oY9kJg"
 }

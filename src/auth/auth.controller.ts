@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserSigninDto, UserSignupDto } from './dto';
 
@@ -11,6 +11,7 @@ export class AuthController {
         return this.authService.signup(dto);
     }
 
+    @HttpCode(HttpStatus.OK) // Overrides the default 201 (Created) status code
     @Post('signin')
     signin(@Body() dto: UserSigninDto) {
         return this.authService.signin(dto);

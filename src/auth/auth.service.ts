@@ -1,11 +1,11 @@
-import { ForbiddenException, HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client'
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 
 import { UserSigninDto, UserSignupDto } from './dto';
-import { ROLES, PRISMA_ERROR_CODES } from '../../config/appConstants.json';
+import { ROLES, PRISMA_ERROR_CODES, TEST_JWT_SECRET } from '../../config/appConstants.json';
 import { emailAlreadyTaken, passwordNotMatched, incorrectCredential } from '../../config/responseMessages/errorMessages.json';
 import { ConfigService } from '@nestjs/config';
 
@@ -70,7 +70,7 @@ export class AuthService {
             email
         };
     
-        const jwtSecret = this.config.get("TOKEN_SECRET") || "VZEB64KASOf20splwZKPrqPay4oY9kJg";
+        const jwtSecret = this.config.get("TOKEN_SECRET") || TEST_JWT_SECRET;
 
         const token = await this.jwt.signAsync(payload, {
             expiresIn: '15m',
