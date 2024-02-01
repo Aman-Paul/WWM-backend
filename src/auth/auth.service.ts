@@ -1,10 +1,10 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpCode, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserSigninDto, UserSignupDto } from './dto';
 import { Prisma } from '@prisma/client'
 
 import * as argon from 'argon2';
-import * as appConstants from '../../config/appConstants.json';
+import { ROLES, PRISMA_ERROR_CODES } from '../../config/appConstants.json';
 
 import { emailAlreadyTaken, passwordNotMatched, incorrectCredential } from '../../config/responseMessages/errorMessages.json';
 
@@ -18,24 +18,22 @@ export class AuthService {
                 throw new HttpException( passwordNotMatched , HttpStatus.BAD_REQUEST);
             }
             
-            // generate the password hash
             const hashPassword = await argon.hash(dto.password);
 
-            // Create new user
             const user = await this.prisma.user.create({
                 data: {
                     firstName: dto.email,
                     lastName: dto.lastName, 
                     email: dto.email,
                     hashPassword,
-                    role: dto.role ? appConstants.ROLES[dto.role.toUpperCase()] : appConstants.ROLES.USER
+                    role: dto.role ? ROLES[dto.role.toUpperCase()] : ROLES.USER
                 }
             });
     
             return user;
         } catch (error) {
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
-                if(error.code === appConstants.PRISMA_ERROR_CODES.DUPLICATE_ENTRY) {
+                if(error.code === PRISMA_ERROR_CODES.DUPLICATE_ENTRY) {
                     throw new ForbiddenException( emailAlreadyTaken );
                 }
             }
