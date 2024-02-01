@@ -30,3 +30,14 @@ export class UserSignupDto {
     @IsOptional()
     role?: string;
 }
+
+export class UserSigninDto {
+
+    @IsEmail()
+    @IsNotEmpty()
+    email: string
+
+    @IsString()
+    @IsNotEmpty()
+    password: string
+}

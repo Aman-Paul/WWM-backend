@@ -1,25 +1,27 @@
 import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserSignupDto } from './dto';
+import { UserSigninDto, UserSignupDto } from './dto';
 import { Prisma } from '@prisma/client'
 
 import * as argon from 'argon2';
 import * as appConstants from '../../config/appConstants.json';
 
-import { emailAlreadyTaken, passwordNotMatched } from '../../config/responseMessages/errorMessages.json';
+import { emailAlreadyTaken, passwordNotMatched, incorrectCredential } from '../../config/responseMessages/errorMessages.json';
 
 @Injectable()
 export class AuthService {
     constructor( private prisma: PrismaService ) {}
 
     async signup(dto: UserSignupDto) {
-        if(dto.password !== dto.confirmPassword) {
-            throw new HttpException( passwordNotMatched , HttpStatus.BAD_REQUEST);
-        }
-        
-        // generate the password hash
-        const hashPassword = await argon.hash(dto.password);
         try {
+            if(dto.password !== dto.confirmPassword) {
+                throw new HttpException( passwordNotMatched , HttpStatus.BAD_REQUEST);
+            }
+            
+            // generate the password hash
+            const hashPassword = await argon.hash(dto.password);
+
+            // Create new user
             const user = await this.prisma.user.create({
                 data: {
                     firstName: dto.email,
@@ -42,9 +44,25 @@ export class AuthService {
         }
     }
 
-    signin() {
+    async signin(dto: UserSigninDto) {
 
-        return { msg: 'I am signedIn' };
+        // find the user
+        const user = await this.prisma.user.findUnique({
+            where: {
+                email: dto.email
+            }
+        });
+
+        if(!user) {
+            throw new ForbiddenException(incorrectCredential);
+        }
+
+        const pwMatches = await argon.verify(user.hashPassword, dto.password);
+        if(!pwMatches) {
+            throw new ForbiddenException(incorrectCredential);
+        }
+
+        return user;
     }
 
 }
