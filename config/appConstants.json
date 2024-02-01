@@ -1,0 +1,13 @@
+{
+    "ENV": {
+        "DEVELOPMENT": "development",
+        "STAGING": "staging",
+        "PRODUCTION": "production"
+    },
+    "ROLES": {
+        "SUPERADMIN":"SUPERADMIN",
+        "ADMIN":"ADMIN",
+        "CONSULTANT":"CONSULTANT",
+        "USER":"USER"
+    }
+}
