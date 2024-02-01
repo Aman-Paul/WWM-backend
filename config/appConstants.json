@@ -9,5 +9,8 @@
         "ADMIN":"ADMIN",
         "CONSULTANT":"CONSULTANT",
         "USER":"USER"
+    },
+    "PRISMA_ERROR_CODES": {
+        "DUPLICATE_ENTRY": "P2002"
     }
 }

@@ -1,10 +1,12 @@
 import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserSignupDto } from './dto';
+import { Prisma } from '@prisma/client'
 
 import * as argon from 'argon2';
 import * as appConstants from '../../config/appConstants.json';
-import { Prisma } from '@prisma/client'
+
+import { emailAlreadyTaken, passwordNotMatched } from '../../config/responseMessages/errorMessages.json';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +14,7 @@ export class AuthService {
 
     async signup(dto: UserSignupDto) {
         if(dto.password !== dto.confirmPassword) {
-            throw new HttpException("Password does not match", HttpStatus.BAD_REQUEST);
+            throw new HttpException( passwordNotMatched , HttpStatus.BAD_REQUEST);
         }
         
         // generate the password hash
@@ -31,11 +33,11 @@ export class AuthService {
             return user;
         } catch (error) {
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
-                if(error.code === 'P2002') {
-                    throw new ForbiddenException("Email already taken");
+                if(error.code === appConstants.PRISMA_ERROR_CODES.DUPLICATE_ENTRY) {
+                    throw new ForbiddenException( emailAlreadyTaken );
                 }
             }
-            
+
             throw error;
         }
     }
