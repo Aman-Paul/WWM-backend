@@ -7,7 +7,7 @@
     "ROLES": {
         "SUPERADMIN":"SUPERADMIN",
         "ADMIN":"ADMIN",
-        "CONSULTANT":"CONSULTANT",
+        "PROFESSIONALS":"PROFESSIONALS",
         "USER":"USER"
     },
     "PRISMA_ERROR_CODES": {

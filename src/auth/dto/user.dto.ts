@@ -1,5 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
-import * as appConstants from '../../../config/appConstants.json';
+import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, MinLength } from "class-validator";
 
 export class UserSignupDto {
     @IsString()
@@ -26,9 +25,23 @@ export class UserSignupDto {
     @MaxLength(20)
     confirmPassword: string;
 
-    @IsEnum([appConstants.ROLES.ADMIN, appConstants.ROLES.CONSULTANT, appConstants.ROLES.SUPERADMIN, appConstants.ROLES.USER])
+    @IsString()
     @IsOptional()
-    role?: string;
+    nationality: string;
+
+    @IsString()
+    @IsOptional()
+    roleId?: number;
+
+    @IsNumber()
+    @IsOptional()
+    @MinLength(0)
+    @MaxLength(100)
+    refundable_percentage?: string;
+
+    @IsString()
+    @IsOptional()
+    intro_link?: string;
 }
 
 export class UserSigninDto {

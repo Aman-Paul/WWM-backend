@@ -21,14 +21,17 @@ export class AuthService {
             
             const hashPassword = await argon.hash(dto.password);
 
+            let data = {
+                firstName: dto.email,
+                lastName: dto.lastName, 
+                email: dto.email,
+                hashPassword,
+                roleId: dto.roleId,
+                nationality: dto.nationality,
+            }
+
             const user = await this.prisma.user.create({
-                data: {
-                    firstName: dto.email,
-                    lastName: dto.lastName, 
-                    email: dto.email,
-                    hashPassword,
-                    role: dto.role ? ROLES[dto.role.toUpperCase()] : ROLES.USER
-                }
+                data
             });
     
             return this.signToken(user.id, user.email);
@@ -54,6 +57,10 @@ export class AuthService {
 
         if(!user) {
             throw new ForbiddenException(incorrectCredential);
+        }
+
+        if(!user.isActive) {
+            return {  message: 'Account is not active' };
         }
 
         const pwMatches = await argon.verify(user.hashPassword, dto.password);

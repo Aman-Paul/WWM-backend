@@ -11,16 +11,19 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  unique_id  String   @unique @default(uuid())
 
   email        String @unique
   hashPassword String
 
-  firstName String
-  lastName  String?
-  role      Role    @default(USER)
+  firstName   String
+  lastName    String?
+  nationality String?
+  roleId      Int
+  role        Roles   @relation(fields: [roleId], references: [id])
 
   isActive Boolean @default(true)
   comment  String?
@@ -28,9 +31,60 @@ model User {
   @@map("users")
 }
 
-enum Role {
-  SUPERADMIN
-  ADMIN
-  CONSULTANT
-  USER
+model UserInfo {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  unique_id  String   @unique @default(uuid())
+
+  refundable_percentage Float   @default(100)
+  is_verified           Boolean @default(false)
+  rating                Int     @default(1)
+  intro_link            String?
+
+  specialization_id Int?
+  specialization    Specializations? @relation(fields: [specialization_id], references: [id])
+  lable_id          Int?
+  label             Labels?          @relation(fields: [lable_id], references: [id])
+
+  @@map("user_info")
+}
+
+model Roles {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  unique_id  String   @unique @default(uuid())
+  title      String   @default("USER")
+  is_active  Boolean  @default(true)
+
+  user User[]
+
+  @@map("roles")
+}
+
+model Specializations {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  unique_id  String   @unique @default(uuid())
+  title      String   @default("USER")
+  is_active  Boolean  @default(true)
+
+  user_info_id UserInfo[]
+
+  @@map("specializations")
+}
+
+model Labels {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  unique_id  String   @unique @default(uuid())
+  title      String   @default("USER")
+  is_active  Boolean  @default(true)
+
+  user_info_id UserInfo[]
+
+  @@map("labels")
 }
