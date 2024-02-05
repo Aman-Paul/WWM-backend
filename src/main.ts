@@ -5,7 +5,7 @@ import dbUrls  from '../config/db';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   const environment = process.env.ENV || appConstants.ENV.DEVELOPMENT;
   process.env.DATABASE_URL = dbUrls[environment].url;
@@ -13,6 +13,6 @@ async function bootstrap() {
     whitelist: true,
   }));
 
-  await app.listen(3000);
+  await app.listen(9090);
 }
 bootstrap();
