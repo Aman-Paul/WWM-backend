@@ -4,8 +4,10 @@ import { Prisma } from '@prisma/client'
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 
-import { UserSigninDto, UserSignupDto } from './dto';
+import { ForgetPasswordDto, UserSigninDto, UserSignupDto } from './dto';
 import { PRISMA_ERROR_CODES, ENV_KEYS } from '../../config/appConstants.json';
+import { userNotFound } from "../../config/responseMessages/errorMessages.json";
+import { passwordChangedSuccessfully } from "../../config/responseMessages/successMessages.json";
 import { emailAlreadyTaken, passwordNotMatched, incorrectCredential } from '../../config/responseMessages/errorMessages.json';
 import { ConfigService } from '@nestjs/config';
 
@@ -16,13 +18,13 @@ export class AuthService {
     async signup(dto: UserSignupDto) {
         try {
             if(dto.password !== dto.confirmPassword) {
-                throw new HttpException( passwordNotMatched , HttpStatus.BAD_REQUEST);
+                throw new HttpException(passwordNotMatched , HttpStatus.BAD_REQUEST);
             }
             
             const hashPassword = await argon.hash(dto.password);
 
             let data = {
-                firstName: dto.email,
+                firstName: dto.firstName,
                 lastName: dto.lastName, 
                 email: dto.email,
                 hashPassword,
@@ -88,5 +90,41 @@ export class AuthService {
             access_token: token
         }
     }
+
+    async forgetPassword(dto: ForgetPasswordDto) {
+        try {
+            const userFromDb = await this.prisma.user.findUnique({
+                where: {
+                    email: dto.email
+                }
+            });
+
+            if (!userFromDb) {
+                throw new HttpException(userNotFound, HttpStatus.NOT_FOUND);
+            }
+
+            if(dto.confirmPassword !== dto.password) {
+                throw new HttpException(passwordNotMatched , HttpStatus.BAD_REQUEST);
+            }
+
+            const hashPassword = await argon.hash(dto.password);
+            const user = await this.prisma.user.update({
+                where: {
+                    email: dto.email,
+                },
+                data: {
+                    hashPassword: hashPassword
+                }
+            });
+
+            return {
+                success: true,
+                message: passwordChangedSuccessfully
+            }           
+        } catch (error) {
+            console.log("Errot in forgetPassword service:", error);
+            return error;
+        }
+    } 
 
 }

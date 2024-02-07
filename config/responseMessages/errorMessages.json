@@ -1,5 +1,6 @@
 {
     "emailAlreadyTaken" : "Email already taken.",
     "passwordNotMatched": "Password does not match.",
-    "incorrectCredential": "Credentials are incorrect."
+    "incorrectCredential": "Credentials are incorrect.",
+    "userNotFound": "User not found."
 }

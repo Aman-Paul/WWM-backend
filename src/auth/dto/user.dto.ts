@@ -54,3 +54,18 @@ export class UserSigninDto {
     @IsNotEmpty()
     password: string
 }
+
+export class ForgetPasswordDto {
+
+    @IsEmail()
+    @IsNotEmpty()
+    email: string
+
+    @IsString()
+    @IsNotEmpty()
+    password: string
+
+    @IsString()
+    @IsNotEmpty()
+    confirmPassword: string;
+}
