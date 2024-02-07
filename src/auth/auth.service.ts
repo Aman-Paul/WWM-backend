@@ -44,50 +44,58 @@ export class AuthService {
                 }
             }
 
+            console.log("Error in auth:signup service", error);
             throw error;
         }
     }
 
     async signin(dto: UserSigninDto) {
+        try {
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    email: dto.email
+                }
+            });
 
-        // find the user
-        const user = await this.prisma.user.findUnique({
-            where: {
-                email: dto.email
+            if (!user) {
+                throw new ForbiddenException(incorrectCredential);
             }
-        });
 
-        if(!user) {
-            throw new ForbiddenException(incorrectCredential);
+            if (!user.isActive) {
+                return { message: 'Account is not active' };
+            }
+
+            const pwMatches = await argon.verify(user.hashPassword, dto.password);
+            if (!pwMatches) {
+                throw new ForbiddenException(incorrectCredential);
+            }
+
+            return this.signToken(user.id, user.email);
+        } catch (error) {
+            console.log("Error in auth:signin service", error);
+            throw error;
         }
-
-        if(!user.isActive) {
-            return {  message: 'Account is not active' };
-        }
-
-        const pwMatches = await argon.verify(user.hashPassword, dto.password);
-        if(!pwMatches) {
-            throw new ForbiddenException(incorrectCredential);
-        }
-
-        return this.signToken(user.id, user.email);
     }
 
     async signToken( userId: number, email: string): Promise<{ access_token: string }> {
-        const payload = {
-            sub: userId,
-            email
-        };
+        try {     
+            const payload = {
+                sub: userId,
+                email
+            };
+        
+            const jwtSecret = this.config.get(ENV_KEYS.TOKEN_SECRET) || this.config.get(ENV_KEYS.TEST_JWT_SECRET);
     
-        const jwtSecret = this.config.get(ENV_KEYS.TOKEN_SECRET) || this.config.get(ENV_KEYS.TEST_JWT_SECRET);
-
-        const token = await this.jwt.signAsync(payload, {
-            expiresIn: '15m',
-            secret: jwtSecret
-        });
-
-        return {
-            access_token: token
+            const token = await this.jwt.signAsync(payload, {
+                expiresIn: '15m',
+                secret: jwtSecret
+            });
+    
+            return {
+                access_token: token
+            }
+        } catch (error) {
+            console.error("Error in auth:signToken service function", error);
         }
     }
 
@@ -108,7 +116,7 @@ export class AuthService {
             }
 
             const hashPassword = await argon.hash(dto.password);
-            const user = await this.prisma.user.update({
+            await this.prisma.user.update({
                 where: {
                     email: dto.email,
                 },
@@ -122,8 +130,8 @@ export class AuthService {
                 message: passwordChangedSuccessfully
             }           
         } catch (error) {
-            console.log("Errot in forgetPassword service:", error);
-            return error;
+            console.log("Errot in auth:forgetPassword service:", error);
+            throw error;
         }
     } 
 
