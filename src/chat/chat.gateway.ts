@@ -4,19 +4,15 @@ import { ChatService } from './chat.service';
 import { ChatDto } from './dto';
 
 @WebSocketGateway({ cors: true })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayConnection {
 
   constructor(private chatSevices: ChatService) {}
 
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client: any) {
-    console.log('Client connected', client.id);
-  }
-
-  handleDisconnect(client: any) {
-    console.log('Client disconnected', client.id);
+  handleConnection(socket: Socket) {
+    this.chatSevices.handleConnection(socket);
   }
 
   @SubscribeMessage('message')
