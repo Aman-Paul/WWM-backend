@@ -16,6 +16,9 @@
     "ENV_KEYS": {
         "STRIPE_SECRET_KEY": "STRIPE_SECRET_KEY",
         "TOKEN_SECRET": "TOKEN_SECRET",
-        "TEST_JWT_SECRET": "TEST_JWT_SECRET"
-    }
+        "TEST_JWT_SECRET": "TEST_JWT_SECRET",
+        "AWS_ACCESS_ID": "AWS_ACCESS_ID",
+        "AWS_SECRET_ID": "AWS_SECRET_ID"
+    },
+    "AWS_BUCKET_NAME" : "wewantmore-temp"
 }
