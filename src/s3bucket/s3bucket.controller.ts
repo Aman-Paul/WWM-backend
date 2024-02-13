@@ -25,6 +25,7 @@ import { S3UploadFileDto } from './dto';
             file, 
             user: req.user
         }
+        
       return this.appService.uploadFile(uploadFileData);
     }
 
