@@ -17,8 +17,7 @@ export class s3Bucket {
       file,
       user: req.user
     }
+
     return this.appService.uploadFile(uploadFileData);
   }
-
-
 }
