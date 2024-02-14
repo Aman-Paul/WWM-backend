@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
-import { ENV_KEYS } from '../../config/appConstants.json';
+import { ENV_KEYS } from '../config/appConstants.json';
 import { PaymentRequestBodyDto } from './dto';
  
 @Injectable()

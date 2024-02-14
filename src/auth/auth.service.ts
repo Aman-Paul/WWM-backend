@@ -5,10 +5,10 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 
 import { ForgetPasswordDto, UserSigninDto, UserSignupDto } from './dto';
-import { PRISMA_ERROR_CODES, ENV_KEYS } from '../../config/appConstants.json';
-import { userNotFound } from "../../config/responseMessages/errorMessages.json";
-import { passwordChangedSuccessfully } from "../../config/responseMessages/successMessages.json";
-import { emailAlreadyTaken, passwordNotMatched, incorrectCredential } from '../../config/responseMessages/errorMessages.json';
+import { PRISMA_ERROR_CODES, ENV_KEYS } from '../config/appConstants.json';
+import { userNotFound } from "../config/responseMessages/errorMessages.json";
+import { passwordChangedSuccessfully } from "../config/responseMessages/successMessages.json";
+import { emailAlreadyTaken, passwordNotMatched, incorrectCredential } from '../config/responseMessages/errorMessages.json';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -69,7 +69,7 @@ export class AuthService {
             if (!pwMatches) {
                 throw new ForbiddenException(incorrectCredential);
             }
-
+            
             return this.signToken(user.id, user.email);
         } catch (error) {
             console.log("Error in auth:signin service", error);
@@ -84,12 +84,7 @@ export class AuthService {
                 email
             };
         
-            const jwtSecret = this.config.get(ENV_KEYS.TOKEN_SECRET) || this.config.get(ENV_KEYS.TEST_JWT_SECRET);
-    
-            const token = await this.jwt.signAsync(payload, {
-                expiresIn: '15m',
-                secret: jwtSecret
-            });
+            const token = await this.jwt.signAsync(payload);
     
             return {
                 access_token: token
@@ -133,6 +128,6 @@ export class AuthService {
             console.log("Errot in auth:forgetPassword service:", error);
             throw error;
         }
-    } 
+    }
 
 }
