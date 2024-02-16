@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 
 import { ForgetPasswordDto, UserSigninDto, UserSignupDto } from './dto';
-import { errorMessages } from "../config/responseMessages/errorMessages.json";
+import  * as errorMessages  from "../config/responseMessages/errorMessages.json";
 import { passwordChangedSuccessfully } from "../config/responseMessages/successMessages.json";
 import { ConfigService } from '@nestjs/config';
 import { users } from '../model/users.model';
@@ -44,7 +44,7 @@ export class AuthService {
         try {
             const user = await this.Users.findOne({
                 where: {
-                    email: dto.email
+                    email: dto.email 
                 }
             });
 

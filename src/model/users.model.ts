@@ -1,4 +1,4 @@
-import { Column, Table } from 'sequelize-typescript';
+import { Column, Table, DataType } from 'sequelize-typescript';
 import { BaseModel } from "./base.model";
 
 @Table
@@ -14,6 +14,12 @@ export class users extends BaseModel<users> {
 
   @Column
   hashPassword: string;
+
+  @Column({
+    type: DataType.UUID,
+    defaultValue: DataType.UUIDV4,
+  })
+  uniqueId: string
 
   @Column({ defaultValue: true })
   isActive: boolean; 
