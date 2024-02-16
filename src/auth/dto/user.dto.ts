@@ -1,8 +1,8 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, Min, MinLength } from "class-validator";
-
+import { errorMessages}  from "../../config/responseMessages/errorMessages.json";
 export class UserSignupDto {
     @IsString()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: errorMessages.firstNameRequired })
     firstName: string;
 
     @IsString()
