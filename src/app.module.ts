@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { PaymentsModule } from './payments/payments.module';
 import configuration from '../config/env/configuration';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -20,7 +21,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
     database: 'we_want_more',
     autoLoadModels: true,
     query: {raw: true},
-  }), AuthModule, UserModule, PaymentsModule]
+  }), AuthModule, UserModule, PaymentsModule, ChatModule]
 })
 export class AppModule {}
 
