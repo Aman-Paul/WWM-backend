@@ -11,7 +11,7 @@ import {
     ServiceUnavailableException
   } from '@nestjs/common';
   import { Response } from 'express';
-  import { errorMessages }  from "../config/responseMessages/errorMessages.json";
+  import * as errorMessages  from "../config/responseMessages/errorMessages.json";
 
   @Catch()
   export class GlobalExceptionFilter implements ExceptionFilter {
