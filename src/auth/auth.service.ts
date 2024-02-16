@@ -1,4 +1,4 @@
-import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client'
 import { JwtService } from '@nestjs/jwt';
@@ -6,9 +6,8 @@ import * as argon from 'argon2';
 
 import { ForgetPasswordDto, UserSigninDto, UserSignupDto } from './dto';
 import { PRISMA_ERROR_CODES, ENV_KEYS } from '../config/appConstants.json';
-import { userNotFound } from "../config/responseMessages/errorMessages.json";
+import { errorMessages } from "../config/responseMessages/errorMessages.json";
 import { passwordChangedSuccessfully } from "../config/responseMessages/successMessages.json";
-import { emailAlreadyTaken, passwordNotMatched, incorrectCredential } from '../config/responseMessages/errorMessages.json';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -18,7 +17,7 @@ export class AuthService {
     async signup(dto: UserSignupDto) {
         try {
             if(dto.password !== dto.confirmPassword) {
-                throw new HttpException(passwordNotMatched , HttpStatus.BAD_REQUEST);
+                throw new HttpException(errorMessages.passwordNotMatched , HttpStatus.BAD_REQUEST);
             }
             
             const hashPassword = await argon.hash(dto.password);
@@ -35,12 +34,16 @@ export class AuthService {
             const user = await this.prisma.user.create({
                 data
             });
+
+            const contentLang = await this.prisma.({
+                
+            });
     
             return this.signToken(user.id, user.email);
         } catch (error) {
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
                 if(error.code === PRISMA_ERROR_CODES.DUPLICATE_ENTRY) {
-                    throw new ForbiddenException( emailAlreadyTaken );
+                    throw new BadRequestException(errorMessages.emailAlreadyTaken);
                 }
             }
 
@@ -58,7 +61,7 @@ export class AuthService {
             });
 
             if (!user) {
-                throw new ForbiddenException(incorrectCredential);
+                throw new BadRequestException(errorMessages.incorrectCredential);
             }
 
             if (!user.isActive) {
@@ -67,7 +70,7 @@ export class AuthService {
 
             const pwMatches = await argon.verify(user.hashPassword, dto.password);
             if (!pwMatches) {
-                throw new ForbiddenException(incorrectCredential);
+                throw new BadRequestException(errorMessages.incorrectCredential);
             }
             
             return this.signToken(user.id, user.email);
@@ -103,11 +106,11 @@ export class AuthService {
             });
 
             if (!userFromDb) {
-                throw new HttpException(userNotFound, HttpStatus.NOT_FOUND);
+                throw new HttpException(errorMessages.userNotFound, HttpStatus.NOT_FOUND);
             }
 
             if(dto.confirmPassword !== dto.password) {
-                throw new HttpException(passwordNotMatched , HttpStatus.BAD_REQUEST);
+                throw new HttpException(errorMessages.passwordNotMatched , HttpStatus.BAD_REQUEST);
             }
 
             const hashPassword = await argon.hash(dto.password);
