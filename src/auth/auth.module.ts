@@ -5,6 +5,8 @@ import { JwtModule } from '@nestjs/jwt';
 // import { JwtStrategy } from './strategy';
 import { ConfigService } from '@nestjs/config';
 import { ENV_KEYS } from '../config/appConstants.json';
+import { users } from '../model/users.model';
+import { SequelizeModule } from '@nestjs/sequelize';
 
 @Module({
   imports: [
@@ -13,8 +15,8 @@ import { ENV_KEYS } from '../config/appConstants.json';
         signOptions: { expiresIn: '30d' },
         secret: configService.get(ENV_KEYS.JWT_SECRET_KEY),
       }),
-      inject: [ConfigService], // Inject ConfigService
-    }),
+      inject: [ConfigService],
+    }),SequelizeModule.forFeature([users])
   ],
   providers: [AuthService],
   controllers: [AuthController],
